@@ -16,13 +16,43 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import EventBus from './components/helpers/eventBus';
 
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
+    el: '#app',
+    data() {
+      return {
+        count: 0,
+        text: '',
+        entry: 0
+      }
+    },
+    created() {
+      EventBus.$on('count-incremented', (count) => {
+        this.text = `Count was increased by ${count}`
+        setTimeout(() => {
+          this.text = '';
+        }, 3000);
+      })
+      EventBus.$on('count-decremented', () => {
+        this.text = `Count was decreased`
+        setTimeout(() => {
+          this.text = '';
+        }, 3000);
+      })
+    },
+    methods: {
+      handleIncrement() {
+        this.count += parseInt(this.entry, 10);
+        EventBus.$emit('count-incremented', this.entry)
+        this.entry = 0;
+      },
+      handleDecrement() {
+        this.count -= parseInt(this.entry, 10);
+        EventBus.$emit('count-decremented')
+        this.entry = 0;
+      }
+    }
 }
 </script>
 
